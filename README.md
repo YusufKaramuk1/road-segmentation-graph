@@ -1,68 +1,174 @@
-# road-segmentation-graph
+# 🚧 Road Segmentation & Network Graph Analysis from Satellite Imagery
 
-Bu proje, uydu görüntülerinden yolları otomatik olarak tespit eden ve elde edilen yol maskelerini iskelet (skeleton) ve graph yapısına dönüştürerek yol ağı analizi yapan uçtan uca bir derin öğrenme pipeline’ıdır.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
-Pipeline şu adımlardan oluşur:
-
-1. Uydu görüntüsünden yol segmentasyonu  
-2. Yol maskesinden skeleton çıkarımı  
-3. Skeleton’dan graph oluşturma  
-4. Graph metrikleri ve görsel rapor üretimi  
-
-Proje hem eğitim veri seti üzerinde hem de dışarıdan verilen rastgele uydu görüntüleri üzerinde çalışacak şekilde düzenlenmiştir.
+An end-to-end deep learning pipeline for **automatic road extraction** from satellite imagery and **topological road network analysis**.
 
 ---
 
-## Özellikler
+## 📌 Features
 
-- U-Net + ResNet34 tabanlı yol segmentasyonu
-- DeepGlobe Road Extraction veri seti ile eğitim
-- Best model checkpoint kaydı
-- Threshold tuning
-- Harici görüntü için patch-based inference
-- Skeleton çıkarımı
-- Node / edge tabanlı graph üretimi
-- Graph metrikleri
-- Sunum için tek sayfalık final rapor görseli
+- 🔍 **U-Net + ResNet34** based road segmentation  
+- 🧩 **Patch-based inference** – supports arbitrarily large satellite images  
+- 🧵 **Skeleton extraction** – reduces binary masks to 1-pixel wide road centerlines  
+- 🧠 **Graph construction** – converts skeletons into `networkx` graphs with nodes (junctions/endpoints) and edges  
+- 📊 **Graph metrics** – node/edge counts, connected components, density, betweenness centrality  
+- 🖼️ **Final report** – single-page visualization of all pipeline stages and metrics  
 
 ---
 
-## Kullanılan Veri Seti
+## ⚙️ Pipeline Overview
 
-DeepGlobe Road Extraction Dataset  
-https://www.kaggle.com/datasets/balraj98/deepglobe-road-extraction-dataset
+Satellite Image → Segmentation → Binary Mask → Skeleton → Road Graph → Analysis & Report
 
----
-
-## Kurulum
-
-pip install torch torchvision  
-pip install segmentation-models-pytorch  
-pip install opencv-python albumentations  
-pip install scikit-image networkx matplotlib pillow tqdm  
+| Step | Script | Output |
+|------|--------|--------|
+| 1. Segmentation | `infer_external_image.py` | `outputs/external/latest_mask.png` |
+| 2. Skeletonization | `2_skeleton.py` | `outputs/skeleton.npy` |
+| 3. Graph Construction | `3_graph.py` | `outputs/road_graph.pkl` |
+| 4. Report Generation | `4_report.py` | `outputs/final_report.png` |
 
 ---
 
-## Çalıştırma (Harici Görüntü Testi)
+## 🛠️ Installation
 
-python infer_external_image.py  
-python 2_skeleton.py  
-python 3_graph.py  
-python 4_report.py  
+**Requirements**: Python 3.8 or higher.
 
----
+Clone the repository:
 
-## Çıktılar
+    git clone https://github.com/yourusername/road-segmentation-graph.git
+    cd road-segmentation-graph
 
-outputs/  
-- latest_mask.png  
-- skeleton.npy  
-- graph.png  
-- final_report.png  
+Install dependencies:
+
+    pip install -r requirements.txt
 
 ---
 
-## Açıklama
+## 📦 Pre-trained Model
 
-Bu proje sadece segmentation değil, aynı zamanda yol ağını graph yapısına çeviren bir sistemdir.  
-Gerçek dünya uydu görüntüleri üzerinde test edilmiştir ve ana yol yapısını başarılı şekilde çıkarmaktadır.
+The trained model (`best_model.pth`, ~100 MB) is **not** stored in the repository.  
+Download it from the Releases page and place it inside the `outputs/` folder.
+
+Example:
+
+    mv ~/Downloads/best_model.pth outputs/
+
+> **Note:** Training is NOT required for inference.
+
+---
+
+## 🚀 Usage
+
+### 1️⃣ Train the Model (Optional)
+
+Requires DeepGlobe Road Extraction dataset.
+
+Organise your data as:
+
+    data/
+    └── train/
+        ├── image1_sat.jpg
+        ├── image1_mask.png
+        ├── image2_sat.jpg
+        ├── image2_mask.png
+        └── ...
+
+Run:
+
+    python 1_segment.py
+
+This will:
+- Split data (80% train / 20% validation)
+- Train U-Net (~30 epochs)
+- Save `best_model.pth` and `best_threshold.txt`
+- Generate training curves
+
+---
+
+### 2️⃣ Inference on a New Satellite Image
+
+Place your test image:
+
+    test_images/test1.png
+
+Run the full pipeline:
+
+    python infer_external_image.py
+    python 2_skeleton.py
+    python 3_graph.py
+    python 4_report.py
+
+---
+
+## 📜 Script Descriptions
+
+| Script | Purpose |
+|--------|---------|
+| `infer_external_image.py` | Patch-based inference on large images |
+| `2_skeleton.py` | Mask cleaning + skeleton extraction |
+| `3_graph.py` | Node/edge detection + graph construction |
+| `4_report.py` | Final visualization & metrics |
+
+---
+
+## 📂 Output Files
+
+| File | Description |
+|------|-------------|
+| `best_model.pth` | Trained model |
+| `best_threshold.txt` | Threshold value |
+| `external/latest_input.png` | Input image |
+| `external/latest_mask.png` | Predicted mask |
+| `skeleton.npy` | Skeleton data |
+| `road_graph.pkl` | Graph object |
+| `graph.png` | Graph overlay |
+| `final_report.png` | Final report |
+
+---
+
+## 🧠 Model Details
+
+| Component | Specification |
+|-----------|---------------|
+| Architecture | U-Net |
+| Encoder | ResNet34 |
+| Input Size | 512 × 512 |
+| Loss | BCE + Dice + Focal |
+| Optimizer | Adam |
+| Metric | IoU |
+
+**Typical Performance:**  
+Validation IoU ≈ **0.60**
+
+---
+
+## 🌍 Applications
+
+- Smart city planning  
+- Disaster response  
+- Autonomous navigation  
+- GIS analysis  
+- Map generation  
+
+---
+
+## 📊 Results
+
+![Final Report](outputs/final_report.png)
+
+---
+
+## 💡 Key Insight
+
+Transforms pixel-based segmentation into a **graph representation**, enabling **topological analysis** of road networks.
+
+---
+
+## ⚠️ Notes
+
+- Training is optional  
+- Model must be downloaded separately  
+- Works with any image size (patch-based)  
+- Large files are ignored via `.gitignore`  
