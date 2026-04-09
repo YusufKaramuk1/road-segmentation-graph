@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+
+# Model ve büyük veri dosyaları
+outputs/best_model.pth
+outputs/model.pth
+outputs/*.npy
+outputs/*.pkl
+outputs/external/
+outputs/masks/
+
+# Veri seti
+data/
+
+# Test görselleri (istersen sadece örnek bir tane kalabilir)
+# test_images/*.png
+# test_images/*.jpg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
