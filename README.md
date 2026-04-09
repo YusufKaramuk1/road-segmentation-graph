@@ -1,5 +1,4 @@
 # road-segmentation-graph
-Uydu görüntülerinden yol segmentasyonu ve graph analizi
 
 Bu proje, uydu görüntülerinden yolları otomatik olarak tespit eden ve elde edilen yol maskelerini iskelet (skeleton) ve graph yapısına dönüştürerek yol ağı analizi yapan uçtan uca bir derin öğrenme pipeline’ıdır.
 
