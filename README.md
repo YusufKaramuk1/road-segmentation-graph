@@ -172,3 +172,17 @@ Transforms pixel-based segmentation into a **graph representation**, enabling **
 - Model must be downloaded separately  
 - Works with any image size (patch-based)  
 - Large files are ignored via `.gitignore`  
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+## 👤 Author
+
+**Yusuf Karamuk**  
+
+GitHub: https://github.com/YusufKaramuk1
